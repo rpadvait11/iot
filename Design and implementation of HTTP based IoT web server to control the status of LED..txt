@@ -1,0 +1,80 @@
+#include <WiFi.h>
+
+const char* ssid = "Mahesh";
+const char* password = "012345678";
+
+WiFiServer server(80);
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(15, OUTPUT); // External LED
+
+  delay(10);
+
+  // Connect to WiFi
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("");
+  Serial.println("WiFi connected.");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  server.begin();
+}
+
+void loop() {
+  WiFiClient client = server.available(); // listen for incoming clients
+
+  if (client) {
+    Serial.println("New Client.");
+
+    String currentLine = "";
+
+    while (client.connected()) {
+      if (client.available()) {
+        char c = client.read();
+        Serial.write(c);
+
+        if (c == '\n') {
+          if (currentLine.length() == 0) {
+            // Send HTTP response
+            client.println("HTTP/1.1 200 OK");
+            client.println("Content-type:text/html");
+            client.println();
+
+            client.print("Click <a href=\"/H\">here</a> to turn LED ON.<br>");
+            client.print("Click <a href=\"/L\">here</a> to turn LED OFF.<br>");
+
+            client.println();
+            break;
+          } else {
+            currentLine = "";
+          }
+        } 
+        else if (c != '\r') {
+          currentLine += c;
+        }
+
+        // Check request
+        if (currentLine.endsWith("GET /H")) {
+          digitalWrite(15, HIGH);
+        }
+        if (currentLine.endsWith("GET /L")) {
+          digitalWrite(15, LOW);
+        }
+      }
+    }
+
+    client.stop();
+    Serial.println("Client Disconnected.");
+  }
+}

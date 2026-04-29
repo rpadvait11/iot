@@ -1,0 +1,47 @@
+Static
+
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcd(0x3F, 16, 2); // set the LCD address to 0x3F for a 16x2 display
+
+void setup() {
+  lcd.init();
+  lcd.clear();
+  lcd.backlight(); // Make sure backlight is on
+
+  // Print a message on both lines of the LCD
+  lcd.setCursor(2, 0); // Set cursor to character 2 on line 0
+  lcd.print("Hello world!");
+
+  lcd.setCursor(2, 1); // Move cursor to character 2 on line 1
+  lcd.print("LCD data");
+}
+
+void loop() {
+}
+
+
+
+
+Scrolling Text
+
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcd(0x3F, 16, 2); // set the LCD address to 0x3F for a 16x2 display
+
+void setup() {
+  lcd.init();
+  lcd.clear();
+  lcd.backlight(); // Make sure backlight is on
+
+  // Print a message
+  lcd.print("Scrolling Text Demo");
+  delay(1000); // pause to read the message initially
+}
+
+void loop() {
+  lcd.scrollDisplayLeft(); // scroll everything to the left by one position
+  delay(300); // small delay for visible scrolling speed
+}

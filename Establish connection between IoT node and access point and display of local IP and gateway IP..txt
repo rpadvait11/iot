@@ -1,0 +1,43 @@
+#include <WiFi.h>
+
+char ssid[] = "REPLACE_WITH_YOUR_SSID";
+char password[] = "REPLACE_WITH_YOUR_PASSWORD";
+
+IPAddress ip;
+IPAddress gateway;
+
+void setup() {
+  Serial.begin(115200); // Initialize Serial Port
+
+  // Attempt to connect to WiFi
+  Serial.print("Attempting to connect to Network named: ");
+  Serial.println(ssid);
+
+  WiFi.begin(ssid, password);
+
+  // Wait until WiFi is connected
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.print(".");
+    delay(300);
+  }
+
+  // If connected, print message
+  Serial.println("\nYou're connected to the network");
+
+  // Wait until IP address is assigned
+  while (WiFi.localIP() == INADDR_NONE) {
+    Serial.print(".");
+    delay(300);
+  }
+
+  ip = WiFi.localIP();
+  Serial.println(ip);
+
+  gateway = WiFi.gatewayIP();
+  Serial.println("GATEWAY IP:");
+  Serial.println(gateway);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+}

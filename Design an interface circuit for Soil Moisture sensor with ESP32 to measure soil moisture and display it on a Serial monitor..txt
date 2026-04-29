@@ -1,0 +1,25 @@
+#define soil_PIN 34
+#define LED_PIN 15
+
+int THRESHOLD = 2500;
+
+void setup() {
+  pinMode(LED_PIN, OUTPUT);
+  Serial.begin(115200);
+}
+
+void loop() {
+  int soilValue = analogRead(soil_PIN);
+
+  Serial.print("soil moisture: ");
+  Serial.println(soilValue);
+
+  if (soilValue < THRESHOLD) {
+    digitalWrite(LED_PIN, HIGH);
+    Serial.println("Moisture detected");
+  } else {
+    digitalWrite(LED_PIN, LOW);
+  }
+
+  delay(1000);
+}

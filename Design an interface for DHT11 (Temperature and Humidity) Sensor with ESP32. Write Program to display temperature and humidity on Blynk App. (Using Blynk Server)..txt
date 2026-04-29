@@ -1,0 +1,69 @@
+#define BLYNK_TEMPLATE_ID "TMPL3Poa118OP"
+#define BLYNK_TEMPLATE_NAME "DHT11second"
+#define BLYNK_AUTH_TOKEN "ZVr5K4lcXzn8mqchmgNlxoABfjhDWtKt"
+
+#define DHTPIN 15
+#define DHTTYPE DHT11
+
+#define BLYNK_PRINT Serial
+
+#include <Adafruit_Sensor.h>
+#include <DHT.h>
+#include <DHT_U.h>
+#include <WiFi.h>
+#include <BlynkSimpleEsp32.h>
+
+char auth[] = BLYNK_AUTH_TOKEN;
+
+// WiFi credentials
+char ssid[] = "mahesh";
+char pass[] = "1234";
+
+BlynkTimer timer;
+DHT_Unified dht(DHTPIN, DHTTYPE);
+
+// Called when device connects to Blynk
+BLYNK_CONNECTED() {
+  Blynk.setProperty(V3, "offImageUrl", "https://static-image.nyc3.cdn.digitaloceanspaces.com/general/fte/congratulations.png");
+  Blynk.setProperty(V3, "onImageUrl", "https://static-image.nyc3.cdn.digitaloceanspaces.com/general/fte/congratulations_pressed.png");
+  Blynk.setProperty(V3, "url", "https://docs.blynk.io/en/getting-started/what-do-i-need-to-blynk/how-quickstart-device-was-made");
+}
+
+// Send sensor data
+void myTimerEvent() {
+  sensors_event_t event;
+
+  // Temperature
+  dht.temperature().getEvent(&event);
+  Serial.print("Temperature: ");
+  float temp = event.temperature;
+  Serial.print(temp);
+  Blynk.virtualWrite(V1, temp);
+  Serial.println("°C");
+
+  // Humidity
+  dht.humidity().getEvent(&event);
+  Serial.print("Relative Humidity: ");
+  float hum = event.relative_humidity;
+  Serial.print(hum);
+  Blynk.virtualWrite(V2, hum);
+  Serial.println("%");
+
+  Serial.println("-------------------------------");
+}
+
+void setup() {
+  Serial.begin(115200);
+
+  dht.begin();
+
+  Blynk.begin(auth, ssid, pass);
+
+  // Call function every 1 second
+  timer.setInterval(1000L, myTimerEvent);
+}
+
+void loop() {
+  Blynk.run();
+  timer.run();
+}
